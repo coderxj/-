@@ -1,3 +1,9 @@
+/*
+* author: acme
+*   date: 2017-1-18
+*  blogs: http://blog.csdn.net/qq_18297675
+*/
+
 #pragma once
 #include <iostream>
 #include <string>
