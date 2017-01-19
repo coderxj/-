@@ -36,14 +36,15 @@ public class CycleLinkList {
 	
 	//添加数据（尾添加）
 	public void addFromTail(Node node) {		
-		Node cur = head;
-		for (int i = 0; i < iCount; i++) {
-			cur = cur.next;          //遍历到链表末尾
+		if (isEmpty())                      //如果链表为空则直接调用AddFromHead，放置下一条语句引用空指针
+			addFromHead(node);
+		else
+		{
+			tail.next.next = node;          //直接把新的节点挂在链表末尾
+			node.next = head;				//最后一个节点指向head
+			tail.next = node;				//tail指向最后一个节点
+			++iCount;
 		}
-		cur.next = node;               //直接把新的节点挂在链表末尾
-		node.next = head;            //最后一个节点指向head
-		tail.next = node;            //tail指向最后一个节点
-		++iCount;
 	}
 	
 	//插入数据（指定位置）
