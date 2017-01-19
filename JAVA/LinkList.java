@@ -77,7 +77,7 @@ public class LinkList {
 	//根据位置查找指定元素  
 	public int searchFromLocal(int local) {		
 		if (local < iCount && local >= 0) {//当搜索的位置合法的时候才进行搜索操作
-			Node cur = head;
+			Node cur = head.next;
 			for (int i = 0; i < local; i++, cur = cur.next);
 			return cur.data;
 		}
