@@ -107,10 +107,13 @@ void LinkList<T>::Insert(int local, Node<T>* node)
 {
 	Node<T>* cur = m_head;   //注意，这里千万不能是m_head->next,因为如果当前链表为空插入的位置
 						     //是0，则会直接执行cur->next这个表达式，解引用空指针会出错							
-	for (int i = 0;i < local;i++, cur = cur->next); //遍历到local这个位置
-	node->next = cur->next;
-	cur->next = node;       //这里的操作就和头添加一样,就是改变指向
-	++m_iCount;
+	if (local <= m_iCount && local >= 0)
+	{
+		for (int i = 0;i < local;i++, cur = cur->next); //遍历到local这个位置
+		node->next = cur->next;
+		cur->next = node;       //这里的操作就和头添加一样,就是改变指向
+		++m_iCount;
+	}
 }
 
 //返回元素位置
