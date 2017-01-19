@@ -61,7 +61,7 @@ void AddFromTail(LPLINKLIST l)
 //插入数据（指定位置）
 void Insert(int local, LPLINKLIST l)
 {
-	if (local < g_iCount && local >= 0)   //当要插入的位置合理的情况下才能插入
+	if (local <= g_iCount && local >= 0)   //当要插入的位置合理的情况下才能插入
 	{
 		LPLINKLIST cur = &head;
 		for (int i = 0;i < local;i++)    //遍历到指定位置
