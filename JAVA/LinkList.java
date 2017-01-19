@@ -8,7 +8,7 @@
 public class LinkList {
 
 	private Node head = new Node(0);    //头节点
-	private int iCount;      			//链表大小
+	private int iCount = 0;      			//链表大小
 	
 	//判断表是否为空
 	public boolean isEmpty() {
