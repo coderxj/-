@@ -110,13 +110,15 @@ void CycleLinkList<T>::AddFromHead(Node<T>* node)
 template<typename T>
 void CycleLinkList<T>::AddFromTail(Node<T>* node)
 {
-	Node<T>* cur = m_head;
-	while (cur->next != m_head)
-		cur = cur->next;     //遍历到链表末尾
-	cur->next = node;               //直接把新的节点挂在链表末尾
-	node->next = m_head;            //最后一个节点指向head
-	m_tail->next = node;            //tail指向最后一个节点
-	++m_iCount;
+	if (IsEmpty())                      //如果链表为空则直接调用AddFromHead，放置下一条语句引用空指针
+		AddFromHead(node);
+	else
+	{
+		m_tail->next->next = node;          //直接把新的节点挂在链表末尾
+		node->next = m_head;				//最后一个节点指向head
+		m_tail->next = node;				//tail指向最后一个节点
+		++m_iCount;
+	}
 }
 
 //插入数据（指定位置）
