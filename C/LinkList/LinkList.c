@@ -256,6 +256,7 @@ void ClearLinkList()
 		cur = cur->next;    //向前查找下一个节点
 		free(temp);         //释放前一个节点的空间
 	} 
+	g_iCount = 0;  
 	head.next = NULL;       //最后让头节点指向NULL
 }
 
