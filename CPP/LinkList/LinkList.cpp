@@ -170,7 +170,7 @@ T LinkList<T>::SearchFromLocal(int local)
 {
 	if (local < m_iCount && local >= 0)//当搜索的位置合法的时候才进行搜索操作
 	{
-		Node<T>* cur = m_head;
+		Node<T>* cur = m_head->next;
 		for (int i = 0; i < local; i++, cur = cur->next);
 		return cur->data;
 	}
