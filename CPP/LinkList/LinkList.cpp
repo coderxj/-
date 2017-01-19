@@ -260,6 +260,7 @@ void LinkList<T>::ClearLinkList()
 		cur = cur->next;    //向前查找下一个节点
 		delete temp;        //释放前一个节点的空间
 	}
+	m_iCount = 0;
 	m_head->next = NULL;       //最后让头节点指向NULL
 }
 
