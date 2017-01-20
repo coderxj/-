@@ -20,9 +20,9 @@ typedef struct _link_list
 {
 	STUDENT s;           //链表中的节点的数据项，这里用一个结构体表示
 	_link_list* next;    //指向下一个节点
-}LINKLIST, *LPLINKLIST;
+}CYCLE_LINK_LIST, *LPCYCLE_LINK_LIST;
 
-LINKLIST head = { 0 };   //创建一个全局的链表头节点(可以用一个函数创建，返回一个局部头节点)
+CYCLE_LINK_LIST head = { 0 };   //创建一个全局的链表头节点(可以用一个函数创建，返回一个局部头节点)
                          //如果头节点是全局的，那么只能有一个链表，如果想要N个，则需要创建一个局部头节点
 						 //还可以加一个尾指针，这样合并表的时候只需要把尾指针指向另一个表的头就可以了
 
@@ -47,7 +47,7 @@ int Size()
 }
 
 //添加数据（头添加）
-void AddFromHead(LPLINKLIST l)
+void AddFromHead(LPCYCLE_LINK_LIST l)
 {
 	l->next = head.next;     //例如 head->l1,现在添加了个l,则l->l1,head->l,就是改变指向
 	head.next = l;
@@ -55,9 +55,9 @@ void AddFromHead(LPLINKLIST l)
 }
 
 //添加数据（尾添加）
-void AddFromTail(LPLINKLIST l)
+void AddFromTail(LPCYCLE_LINK_LIST l)
 {
-	LPLINKLIST cur = &head;
+	LPCYCLE_LINK_LIST cur = &head;
 	while (cur->next != &head)//循环链表，遍历到末尾不再是指针域为空了，而是等于头节点
 		cur = cur->next;      //遍历到链表末尾
 	cur->next = l;            //把l挂在链表的末尾
@@ -66,11 +66,11 @@ void AddFromTail(LPLINKLIST l)
 }
 
 //插入数据（指定位置）
-void Insert(int local, LPLINKLIST l)
+void Insert(int local, LPCYCLE_LINK_LIST l)
 {
 	if (local < g_iCount && local >= 0)   //当要插入的位置合理的情况下才能插入
 	{
-		LPLINKLIST cur = &head;
+		LPCYCLE_LINK_LIST cur = &head;
 		for (int i = 0;i < local;i++)    //遍历到指定位置
 			cur = cur->next;
 		l->next = cur->next;              //在该位置插入
@@ -84,7 +84,7 @@ void Insert(int local, LPLINKLIST l)
 //根据id返回元素位置
 int GetLocalFromId(int id)
 {
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (cur->s.id == id)
@@ -97,7 +97,7 @@ int GetLocalFromId(int id)
 //根据name返回元素位置
 int GetLocalFromName(char* name)
 {
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (strcmp(cur->s.name, name) == 0)
@@ -112,10 +112,10 @@ void DeleteFromLocal(int local)
 {
 	if (local < g_iCount && local >= 0)   //当要删除的位置合理的情况下才能删除
 	{
-		LPLINKLIST cur = &head;
+		LPCYCLE_LINK_LIST cur = &head;
 		for (int i = 0;i < local;i++)    //遍历到指定位置
 			cur = cur->next;
-		LPLINKLIST temp;
+		LPCYCLE_LINK_LIST temp;
 		temp = cur->next;
 		cur->next = temp->next;           //删除该位置下的元素
 		--g_iCount;
@@ -126,13 +126,13 @@ void DeleteFromLocal(int local)
 //删除数据 （指定id）
 void DeleteFromId(int id)
 {
-	LPLINKLIST cur = head.next;
-	LPLINKLIST pre = &head;
+	LPCYCLE_LINK_LIST cur = head.next;
+	LPCYCLE_LINK_LIST pre = &head;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (cur->s.id == id)          //找到该节点
 		{
-			LPLINKLIST temp;
+			LPCYCLE_LINK_LIST temp;
 			temp = cur;
 			pre->next = temp->next;   //修改指向，就是删除了   
 			free(temp);               //最后要释放节点
@@ -147,13 +147,13 @@ void DeleteFromId(int id)
 //删除数据 （指定name）
 void DeleteFromName(char* name)
 {
-	LPLINKLIST cur = head.next;
-	LPLINKLIST pre = &head;
+	LPCYCLE_LINK_LIST cur = head.next;
+	LPCYCLE_LINK_LIST pre = &head;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (strcmp(cur->s.name, name) == 0)          //找到该节点
 		{
-			LPLINKLIST temp;
+			LPCYCLE_LINK_LIST temp;
 			temp = cur;
 			pre->next = temp->next;   //修改指向，就是删除了   
 			free(temp);               //最后要释放节点
@@ -168,7 +168,7 @@ void DeleteFromName(char* name)
 //查找数据 （指定id，返回name）
 char* SearchFromId(int id)
 {
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (cur->s.id == id)          //找到该节点
@@ -181,7 +181,7 @@ char* SearchFromId(int id)
 //查找数据 （指定name，返回id）
 int SearchFromName(char* name)
 {
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)  //遍历，一一比较
 	{
 		if (strcmp(cur->s.name, name) == 0)          //找到该节点
@@ -192,11 +192,11 @@ int SearchFromName(char* name)
 }
 
 //根据local查找指定节点，返回该节点
-LPLINKLIST GetNode(int local)
+LPCYCLE_LINK_LIST GetNode(int local)
 {
 	if (local < g_iCount && local >= 0)
 	{
-		LPLINKLIST cur = head.next;
+		LPCYCLE_LINK_LIST cur = head.next;
 		for (int i = 0;i < local;i++)  //遍历
 			cur = cur->next;
 		return cur;
@@ -211,8 +211,8 @@ void Reverse1()
 	STUDENT temp;
 	for (int i = 0;i < g_iCount / 2;i++)
 	{
-		LPLINKLIST node1 = GetNode(i);                //获取节点
-		LPLINKLIST node2 = GetNode(g_iCount - i - 1);
+		LPCYCLE_LINK_LIST node1 = GetNode(i);                //获取节点
+		LPCYCLE_LINK_LIST node2 = GetNode(g_iCount - i - 1);
 		temp = node1->s;                              //交换数据项，千万别交换节点
 		node1->s = node2->s;
 		node2->s = temp;
@@ -222,19 +222,19 @@ void Reverse1()
 //逆转表(方法2，牺牲空间换取时间，速度很快，时间复杂度为0(n))
 void Reverse2()
 {
-	LINKLIST tHead = { 0 };     //临时头节点
+	CYCLE_LINK_LIST tHead = { 0 };     //临时头节点
 	tHead.next = &tHead;
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)
 	{
-		LPLINKLIST l = (LPLINKLIST)malloc(sizeof(_link_list));
+		LPCYCLE_LINK_LIST l = (LPCYCLE_LINK_LIST)malloc(sizeof(_link_list));
 		memcpy(l, cur, sizeof(_link_list));   //这里一定要复制，而不是赋值=，如果是=，则两指针指向的是同一个节点
 		l->next = tHead.next;        //这里采用头添加，结束后，就会自动逆转过来了         
 		tHead.next = l;
 		cur = cur->next;
 	}
 	cur = head.next;
-	LPLINKLIST temp = tHead.next;
+	LPCYCLE_LINK_LIST temp = tHead.next;
 	while ((cur->next) != &tHead)
 	{
 		memcpy(cur, temp, sizeof(_link_list));   //因为头添加已经是逆转了，所以直接复制到原来的链表中即可
@@ -249,7 +249,7 @@ void Rewrite(int local, STUDENT s)
 {
 	if (local < g_iCount && local >= 0)   //当要删除的位置合理的情况下才能删除
 	{
-		LPLINKLIST cur = head.next;
+		LPCYCLE_LINK_LIST cur = head.next;
 		for (int i = 0;i < local;i++)    //遍历到指定位置
 			cur = cur->next;
 		cur->s = s;                       //修改
@@ -259,10 +259,10 @@ void Rewrite(int local, STUDENT s)
 //清空链表
 void ClearLinkList()
 {
-	LPLINKLIST cur = head.next;
+	LPCYCLE_LINK_LIST cur = head.next;
 	for (int i = 0;i < g_iCount;i++)
 	{
-		LPLINKLIST temp;
+		LPCYCLE_LINK_LIST temp;
 		temp = cur;         //保存前一个节点的地址 
 		cur = cur->next;    //向前查找下一个节点
 		free(temp);         //释放前一个节点的空间
@@ -273,7 +273,7 @@ void ClearLinkList()
 //遍历数据
 void Print()
 {
-	LPLINKLIST cur = &head;
+	LPCYCLE_LINK_LIST cur = &head;
 	while ((cur = cur->next) != &head)
 		printf("%d - %s\n", cur->s.id, cur->s.name);
 }
