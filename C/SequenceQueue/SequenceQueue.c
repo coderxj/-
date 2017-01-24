@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #define ERROR ~(1<<31)  //错误数
 
-//栈结构
+//队列结构
 typedef struct _sequence_queue
 {
 	int* data;			//队列数据区域
