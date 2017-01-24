@@ -66,8 +66,7 @@ public class SequenceQueue<T> { //顺序队列类
 	public void print() throws Exception {					   
 		if (isEmpty())
 			throw new Exception("队列为空，遍历操作失败.");
-		else
-		{
+		else {
 			for (int i = front;i < rear;i++)
 				System.out.println(data[i]);
 		}
@@ -77,8 +76,7 @@ public class SequenceQueue<T> { //顺序队列类
 	public void clearQueue() throws Exception {				  
 		if (isEmpty())
 			throw new Exception("队列为空，清空操作失败.");
-		else
-		{
+		else {
 			front = 0;//不用清空数据，入队的时候直接覆盖就好
 			rear = 0;
 		}
