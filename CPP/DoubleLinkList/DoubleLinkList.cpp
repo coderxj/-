@@ -2,38 +2,49 @@
 * author: acme
 *   date: 2017-1-21
 *  blogs: http://blog.csdn.net/qq_18297675
+* update: 2017-1-25
+*   info: add exception handling,change node class become inner private class
 */
 
 #pragma once
 #include <iostream>
 #include <string>
+#include <exception>
 using namespace std;
 
-template<typename T>
-class Node    //节点类
+//自定义异常类
+class DoubleLinkListException : public exception  //专门提供给外部使用的，不能做成内部类  
 {
-public:		  //初始化构造一个节点
-	Node<T>(T d, Node<T>* p = NULL, Node<T>* n = NULL) : data(d) , pre(p) , next(n) {}
 public:
-	T data;
-	Node<T>* pre;  //前驱节点
-	Node<T>* next; //后继节点
+	DoubleLinkListException(string msg) : m_msg(msg) {}
+	const char * what() const throw () { return m_msg.c_str(); }//重载
+private:
+	string m_msg;
 };
-
 
 template<typename T>
 class DoubleLinkList   //循环链表类
 {
+private:
+	class Node    //节点类
+	{
+	public:		  //初始化构造一个节点
+		Node(T d, Node* p = NULL, Node* n = NULL) : data(d), pre(p), next(n) {}
+	private:
+		T data;
+		Node* pre;  //前驱节点
+		Node* next; //后继节点
+		friend class DoubleLinkList;
+	};
 public:
-	DoubleLinkList();
-	DoubleLinkList(T initNodeValue);
+	DoubleLinkList(T initNodeValue = 0);
 	~DoubleLinkList();
 public:
 	bool IsEmpty();							//判断表是否为空
 	int Size();								//获取元素个数
-	void AddFromHead(Node<T>* node);		//添加数据（头添加）
-	void AddFromTail(Node<T>* node);		//添加数据（尾添加）
-	void Insert(int local, Node<T>* node);	//插入数据（指定位置）
+	void AddFromHead(T e);		//添加数据（头添加）
+	void AddFromTail(T e);		//添加数据（尾添加）
+	void Insert(int local, T e);	//插入数据（指定位置）
 	void DeleteFromLocal(int local);		//删除数据 （指定位置）
 	void DeleteFromElement(T e);			//删除数据 （指定元素）
 	int SearchFromElmemt(T e);				//根据指定元素查找，返回位置
@@ -43,10 +54,10 @@ public:
 	void CopyList(DoubleLinkList<T>& sl);	//复制表
 	void Rewrite(int local, T e);			//修改元素
 	void ClearLinkList();                   //清空链表
-	Node<T>* GetNode(int local);            //获取指定位置的节点
+	Node* GetNode(int local);            //获取指定位置的节点
 	void SortByAsc();                       //升序排序
 	void SortByDesc();                      //降序排序
-	Node<T>* GetTailNode();                 //获取最后一个节点
+	Node* GetTailNode();                 //获取最后一个节点
 	void MergeList(DoubleLinkList<T>& sl);   //合并链表(无序)，会改变原表
 	void MergeListOrder(DoubleLinkList<T>& sl, bool bAsc = true); //合并链表(有序)
 	void MergeListNoChange(DoubleLinkList<T>& sl); //合并链表(无序)，不会改变原表
@@ -55,25 +66,17 @@ private:
 	int GetLocal(T e);						//返回元素位置
 	void SelectSort(bool bAsc = true);      //选择排序法
 	void InitList();                        //初始化链表
-	void SwapNodeData(Node<T>* node1, Node<T>* node2); //交换两个节点的数据
+	void SwapNodeData(Node* node1, Node* node2); //交换两个节点的数据
 private:
-	Node<T>* m_head;   //头节点
-	Node<T>* m_tail;   //尾节点(这个只是指向最后一个节点，并不是最后一个节点指向尾节点)
+	Node* m_head;   //头节点
+	Node* m_tail;   //尾节点(这个只是指向最后一个节点，并不是最后一个节点指向尾节点)
 	int m_iCount;      //链表大小
 	T m_initNodeValue; //初始化节点的值,如果没有这个变量，则当初始化string的时候，实例化的时候会出错
 };
 
-//默认构造
-template<typename T>
-DoubleLinkList<T>::DoubleLinkList()
-{
-	m_initNodeValue = 0;
-	InitList();    //初始化链表
-}
-
 //有参构造
 template<typename T>
-DoubleLinkList<T>::DoubleLinkList(T initNodeValue = 0)
+DoubleLinkList<T>::DoubleLinkList(T initNodeValue)
 {
 	m_initNodeValue = initNodeValue;
 	InitList();    //初始化链表
@@ -93,8 +96,8 @@ template<typename T>
 void DoubleLinkList<T>::InitList()
 {
 	m_iCount = 0;
-	m_head = new Node<T>(m_initNodeValue);//创建头节点
-	m_tail = new Node<T>(m_initNodeValue);//创建尾节点
+	m_head = new Node(m_initNodeValue);//创建头节点
+	m_tail = new Node(m_initNodeValue);//创建尾节点
 }
 
 //判断表是否为空
@@ -113,8 +116,9 @@ int DoubleLinkList<T>::Size()
 
 //添加数据（头添加）
 template<typename T>
-void DoubleLinkList<T>::AddFromHead(Node<T>* node)
+void DoubleLinkList<T>::AddFromHead(T e)
 {
+	Node* node = new Node(e);
 	if (IsEmpty())				//如果链表为空，第一次添加的时候，就让尾指针指向第一个添加的节点
 	{ 
 		m_tail->next = node;        //例如 head->NULL,现在添加了个node1,则node1->NULL,head->node1,先把正方向连好
@@ -134,10 +138,11 @@ void DoubleLinkList<T>::AddFromHead(Node<T>* node)
 
 //添加数据（尾添加）
 template<typename T>
-void DoubleLinkList<T>::AddFromTail(Node<T>* node)
+void DoubleLinkList<T>::AddFromTail(T e)
 {
+	Node* node = new Node(e);
 	if (IsEmpty())
-		AddFromHead(node);   //如果是第一次添加，则调用AddFromHead即可
+		AddFromHead(e);   //如果是第一次添加，则调用AddFromHead即可
 	else
 	{
 		m_tail->next->next = node;  //tail.next表示最后一个节点，这句代码的意思是，让最后一个节点指向新添进来的节点
@@ -149,11 +154,12 @@ void DoubleLinkList<T>::AddFromTail(Node<T>* node)
 
 //插入数据（指定位置）
 template<typename T>
-void DoubleLinkList<T>::Insert(int local, Node<T>* node)
+void DoubleLinkList<T>::Insert(int local, T e)
 {						
+	Node* node = new Node(e);
 	if (local < m_iCount && local >= 0)
 	{
-		Node<T>* cur = m_head;   //注意，这里千万不能是m_head->next,因为如果当前链表为空插入的位置
+		Node* cur = m_head;   //注意，这里千万不能是m_head->next,因为如果当前链表为空插入的位置
 								 //是0，则会直接执行cur->next这个表达式，解引用空指针会出错	
 		for (int i = 0;i < local;i++, cur = cur->next); //遍历到local这个位置
 		node->next = cur->next;			//在该位置插入
@@ -163,15 +169,14 @@ void DoubleLinkList<T>::Insert(int local, Node<T>* node)
 		++m_iCount;
 	}
 	else if (local == m_iCount)//如果是插入尾部，直接调用AddFromTail函数即可
-		AddFromTail(node);
-
+		AddFromTail(e);
 }
 
 //返回元素位置
 template<typename T>
 int DoubleLinkList<T>::GetLocal(T e)
 {
-	Node<T>* cur = m_head->next;
+	Node* cur = m_head->next;
 	for (int i = 0;i < m_iCount;i++, cur = cur->next)
 		if (cur->data == e)
 			return i;
@@ -184,10 +189,10 @@ void DoubleLinkList<T>::DeleteFromLocal(int local)
 {
 	if (local < m_iCount - 1 && local >= 0)   //当要删除的位置合理的情况下才能删除
 	{
-		Node<T>* cur = m_head;
+		Node* cur = m_head;
 		for (int i = 0;i < local;i++)
 			cur = cur->next;
-		Node<T>* temp;
+		Node* temp;
 		temp = cur->next;
 		cur->next = temp->next;           //删除该位置下的元素
 		cur->next->pre = cur;
@@ -196,12 +201,14 @@ void DoubleLinkList<T>::DeleteFromLocal(int local)
 	}
 	else if (local == m_iCount - 1)  //删除的是最后一个元素的话
 	{
-		Node<T>* temp = m_tail->next;   //最后一个节点
+		Node* temp = m_tail->next;   //最后一个节点
 		m_tail->next = temp->pre;		//指向最后一个节点的前一个节点
 		m_tail->next->next = NULL;      //最后一个节点指向NULL
 		--m_iCount;
 		delete temp;
 	}
+	else
+		throw DoubleLinkListException("删除的位置不存在，删除操作失败.");
 }
 
 //删除数据 （指定元素）
@@ -223,19 +230,19 @@ int DoubleLinkList<T>::SearchFromElmemt(T e)
 template<typename T>
 T DoubleLinkList<T>::SearchFromLocal(int local)
 {
-	Node<T>* node = GetNode(local);
+	Node* node = GetNode(local);
 	if (node)
 		return node->data;
 	else
-		return NULL;
+		throw DoubleLinkListException("查找的位置不存在，查找操作失败.");
 }
 
 //逆转表,时间复杂度为0(n/2)
 template<typename T>
 void DoubleLinkList<T>::Reverse()
 {
-	Node<T>* node1 = m_head->next;
-	Node<T>* node2 = m_tail->next;
+	Node* node1 = m_head->next;
+	Node* node2 = m_tail->next;
 	while (node1 != node2)
 	{
 		SwapNodeData(node1, node2);   //交换数据项，千万别交换节点
@@ -255,7 +262,7 @@ void DoubleLinkList<T>::Print(bool bReverse)
 {
 	if (bReverse)  //倒序
 	{
-		Node<T>* cur = m_tail->next;
+		Node* cur = m_tail->next;
 		if (!cur) return;
 		do
 		{
@@ -264,7 +271,7 @@ void DoubleLinkList<T>::Print(bool bReverse)
 	}
 	else
 	{
-		Node<T>* cur = m_head;
+		Node* cur = m_head;
 		while (cur = cur->next)
 			cout << cur->data << endl;
 	}
@@ -274,20 +281,16 @@ void DoubleLinkList<T>::Print(bool bReverse)
 template<typename T>
 void DoubleLinkList<T>::CopyList(DoubleLinkList<T>& sl)
 {
-	Node<T>* cur = m_head->next;
+	Node* cur = m_head->next;
 	for (int i = 0;i < m_iCount;i++, cur = cur->next)
-	{
-		Node<T>* temp = new Node<T>(m_initNodeValue);
-		memcpy(temp, cur, sizeof(Node<T>));          //这里一定要注意，不能只复制头节点，这样只是两个头节点指向同一空间，并没有实现真正的复制
-		sl.AddFromTail(temp);   //因为加了个尾指针，现在头添加和尾添加时间复杂度都是0(1)
-	}
+		sl.AddFromTail(cur->data);   //因为加了个尾指针，现在头添加和尾添加时间复杂度都是0(1)
 }
 
 //修改元素
 template<typename T>
 void DoubleLinkList<T>::Rewrite(int local, T e)
 {
-	Node<T>* node = GetNode(local);
+	Node* node = GetNode(local);
 	if (node)
 		node->data = e;
 }
@@ -296,10 +299,12 @@ void DoubleLinkList<T>::Rewrite(int local, T e)
 template<typename T>
 void DoubleLinkList<T>::ClearLinkList()
 {
-	Node<T>* cur = m_head->next;
+	if(IsEmpty())
+		throw DoubleLinkListException("链表为空，清空操作失败.");
+	Node* cur = m_head->next;
 	for (int i = 0;i < m_iCount;i++)
 	{
-		Node<T>* temp;
+		Node* temp;
 		temp = cur;         //保存前一个节点的地址 
 		cur = cur->next;    //向前查找下一个节点
 		delete temp;         //释放前一个节点的空间
@@ -310,18 +315,18 @@ void DoubleLinkList<T>::ClearLinkList()
 
 //获取指定位置的节点
 template<typename T>
-Node<T>* DoubleLinkList<T>::GetNode(int local)
+typename DoubleLinkList<T>::Node* DoubleLinkList<T>::GetNode(int local)
 {
 	if (local < m_iCount / 2 && local >= 0)   //如果local在前半部分，则从前往后找
 	{
-		Node<T>* cur = m_head->next;
+		Node* cur = m_head->next;
 		for (int i = 0;i < local;i++)  //遍历
 			cur = cur->next;
 		return cur;
 	}
 	else if (local >= m_iCount / 2 && local < m_iCount - 1) //如果local在后半部分，则从后往前找
 	{
-		Node<T>* cur = m_tail->next;
+		Node* cur = m_tail->next;
 		for (int i = 0;i < m_iCount - local - 1;i++)  //遍历
 			cur = cur->pre;
 		return cur;
@@ -352,10 +357,10 @@ void DoubleLinkList<T>::SelectSort(bool bAsc)
 {
 	for (int i = 0;i < m_iCount;i++)
 	{
-		Node<T>* node1 = GetNode(i);
+		Node* node1 = GetNode(i);
 		for (int j = i + 1;j < m_iCount;j++)
 		{
-			Node<T>* node2 = GetNode(j);
+			Node* node2 = GetNode(j);
 			if (bAsc)   //升序
 			{
 				if (node1->data > node2->data)
@@ -372,7 +377,7 @@ void DoubleLinkList<T>::SelectSort(bool bAsc)
 
 //交换两个节点的数据
 template<typename T>
-void DoubleLinkList<T>::SwapNodeData(Node<T>* node1, Node<T>* node2)
+void DoubleLinkList<T>::SwapNodeData(Node* node1, Node* node2)
 {
 	T temp;
 	temp = node1->data;
@@ -382,7 +387,7 @@ void DoubleLinkList<T>::SwapNodeData(Node<T>* node1, Node<T>* node2)
 
 //获取最后一个节点
 template<typename T>
-Node<T>* DoubleLinkList<T>::GetTailNode()
+typename DoubleLinkList<T>::Node* DoubleLinkList<T>::GetTailNode()
 {
 	return m_tail->next;
 }
