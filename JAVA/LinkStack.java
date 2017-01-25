@@ -8,7 +8,7 @@
 */
 public class LinkStack<T> {  //链栈类
 	
-	class Node {  //节点类
+	private class Node {  //节点类
 		
 		public T data;
 		public Node next;
