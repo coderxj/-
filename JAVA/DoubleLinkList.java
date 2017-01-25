@@ -9,18 +9,7 @@
 
 public class DoubleLinkList<T> {
 
-	public static void main(String[] args) {
-		DoubleLinkList<Integer> list = new DoubleLinkList<>();
-		for (int i = 0; i < 10; i++) {
-			list.addFromTail(i);
-		}
-		DoubleLinkList<Integer> list2 = list.copyList();
-		list2.addFromTail(100000);
-		list2.print(false);
-		
-	}
-	
-	class Node implements Cloneable{  //实现该接口后，可进行对象的复制
+	private class Node{ 
 		
 		public T data;
 		public Node pre;   //前驱
