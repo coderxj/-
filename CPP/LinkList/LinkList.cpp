@@ -3,7 +3,7 @@
 *   date: 2017-1-18
 *  blogs: http://blog.csdn.net/qq_18297675
 * update: 2017-1-25
-*   info: add exception handling, add tail ptr,improve the efficiency of adding data
+*   info: add exception handling, add tail ptr,improve the efficiency of adding data,change node class become inner private class
 */
 
 #pragma once
@@ -130,7 +130,6 @@ void LinkList<T>::AddFromTail(T e)
 		m_tail->next = node;	  //修改tail的指向
 		++m_iCount;
 	}
-	
 }
 
 //插入数据（指定位置）
@@ -173,6 +172,8 @@ void LinkList<T>::DeleteFromLocal(int local)
 		for (int i = 0;i < local;i++, cur = cur->next, pre = pre->next);  //遍历到指定位置
 		Node* temp = cur;
 		pre->next = temp->next;  //例如:pre->cur->next,现在直接让pre->next，然后释放掉cur
+		if (pre->next == NULL)  //如果是删除最后一个元素，则需要修改尾指针
+			m_tail->next = pre;
 		delete cur;
 		--m_iCount;
 	}
@@ -279,6 +280,14 @@ void LinkList<T>::ClearLinkList()
 	m_tail->next = NULL;
 }
 
+
+/*
+*    GetNode这个函数的返回值要注意，一定要按照这种格式写
+*    C++模板的一个特性：依赖受限名称不能作为类型使用，除非在前面加上 typename关键字
+*    依赖名称：含有模板类型参数<T>
+*    受限名称：含有“::”符号
+*    所以Node前面一定要有::，<T>前面一定要有typename关键字
+*/
 //获取指定位置的节点
 template<typename T>
 typename LinkList<T>::Node* LinkList<T>::GetNode(int local)
