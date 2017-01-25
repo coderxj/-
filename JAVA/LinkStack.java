@@ -1,4 +1,4 @@
-package acme.list;
+
 /*
 * author: acme
 *   date: 2017-1-22
