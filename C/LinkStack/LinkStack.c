@@ -70,6 +70,7 @@ int PopE(LPLINKSTACK top)
 	LPLINKSTACK temp = top->next;   //保存将要出栈的元素（其实就是链表中删除元素的步骤）
 	int data = temp->data;
 	top->next = temp->next;
+	top->data--; 
 	free(temp);                      //释放节点
 	return data;
 }
