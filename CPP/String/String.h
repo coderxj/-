@@ -1,4 +1,9 @@
 #pragma once
+/*
+* author: acme
+*   date: 2017-2-28
+*  blogs: http://blog.csdn.net/qq_18297675
+*/
 #include<iostream>
 using namespace std;
 #define MAX_LEN 256    //默认最大长度是256
